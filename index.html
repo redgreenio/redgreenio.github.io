@@ -1,8 +1,1094 @@
 <html>
-    <head>
-        <title>Tumbleweed</title>
-    </head>
-    <body>
-        <h1>Hello world!</h1>
-    </body>
+<head>
+  <meta charset="UTF-8"/>
+  <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>StoryViewerPageFragment.kt—Tumbleweed</title>
+  <style>
+    .container {
+      margin: auto;
+      width: 100%;
+    }
+
+    .container > svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+</body>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+  const colorin = "#00f";
+  const colorout = "#f00";
+  const colornone = "#ddd";
+  const colorselected = "#000";
+  const colorunselected = "#999";
+
+  function bilink(root) {
+    const map = new Map(root.leaves().map(d => [d.data.id, d]));
+    for (const d of root.leaves()) d.dependents = [], d.dependencies = d.data.targets.map(i => [d, map.get(i)]);
+    for (const d of root.leaves()) for (const o of d.dependencies) o[1].dependents.push(o);
+    return root;
+  }
+
+  const width = 954;
+
+  const radius = width / 2;
+
+  const tree = d3.cluster()
+    .size([2 * Math.PI, radius - 100]);
+
+  const line = d3.lineRadial()
+    .curve(d3.curveBundle.beta(0.85))
+    .radius(d => d.y)
+    .angle(d => d.x);
+
+  const toChartData = (graph) => {
+    const {nodes, links} = graph;
+    const groupById = new Map;
+    const nodeById = new Map(nodes.map(node => [node.id, node]));
+
+    for (const node of nodes) {
+      let group = groupById.get(node.group);
+      if (!group) groupById.set(node.group, group = {id: node.group, children: []});
+      group.children.push(node);
+      node.targets = [];
+    }
+
+    for (const {source: sourceId, target: targetId} of links) {
+      nodeById.get(sourceId).targets.push(targetId);
+    }
+
+    return {children: [...groupById.values()]};
+  };
+
+  function countableTextDependencies(count) {
+    if (count === 1) {
+      return "1 dependency";
+    } else {
+      return count + " dependencies";
+    }
+  }
+
+  function countableTextDependents(count) {
+    if (count === 1) {
+      return "1 dependent";
+    } else {
+      return count + " dependents";
+    }
+  }
+
+  const drawEdgeBundlingGraph = (graph) => {
+    function clearEdgeBundlingGraph() {
+      const svg = d3.select("svg");
+      svg.selectAll("*").remove();
+    }
+
+    clearEdgeBundlingGraph()
+
+    const root = tree(bilink(d3.hierarchy(toChartData(graph))
+      .sort((a, b) => d3.ascending(a.height, b.height) || d3.ascending(a.data.id, b.data.id))));
+
+    const svg = d3.select("#svg")
+      .attr("viewBox", [-width / 2, -width / 2, width, width]);
+
+    svg.append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 10)
+      .selectAll("g")
+      .data(root.leaves())
+      .join("g")
+      .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+      .append("text")
+      .attr("fill", colorunselected)
+      .attr("dy", "0.31em")
+      .attr("x", d => d.x < Math.PI ? 6 : -6)
+      .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+      .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+      .text(d => d.data.id)
+      .each(function (d) {
+        d.text = this;
+      })
+      .on("mouseover", overed)
+      .on("mouseout", outed)
+      .call(text => text.append("title").text(d =>
+        `${d.data.id}
+        ${countableTextDependencies(d.dependencies.length)}
+        ${countableTextDependents(d.dependents.length)}`
+      ));
+
+    const link = svg.append("g")
+      .attr("stroke", colornone)
+      .attr("fill", "none")
+      .selectAll("path")
+      .data(root.leaves().flatMap(leaf => leaf.dependencies))
+      .join("path")
+      .style("mix-blend-mode", "multiply")
+      .attr("d", ([i, o]) => line(i.path(o)))
+      .each(function (d) {
+        d.path = this;
+      });
+
+    function overed(event, d) {
+      link.style("mix-blend-mode", null);
+      d3.select(this).attr("fill", colorselected);
+      d3.selectAll(d.dependents.map(d => d.path)).attr("stroke", colorin).raise();
+      d3.selectAll(d.dependents.map(([d]) => d.text)).attr("fill", colorin);
+      d3.selectAll(d.dependencies.map(d => d.path)).attr("stroke", colorout).raise();
+      d3.selectAll(d.dependencies.map(([, d]) => d.text)).attr("fill", colorout);
+    }
+
+    function outed(event, d) {
+      link.style("mix-blend-mode", "multiply");
+      d3.select(this).attr("fill", colorunselected);
+      d3.selectAll(d.dependents.map(d => d.path)).attr("stroke", null);
+      d3.selectAll(d.dependents.map(([d]) => d.text)).attr("fill", colorunselected).attr("font-weight", null);
+      d3.selectAll(d.dependencies.map(d => d.path)).attr("stroke", null);
+      d3.selectAll(d.dependencies.map(([, d]) => d.text)).attr("fill", colorunselected).attr("font-weight", null);
+    }
+
+    return svg.node();
+  }
+
+  const graph = {
+  "nodes" : [ {
+    "id" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "group" : 1
+  }, {
+    "id" : "android.widget.TextView viewsAndReplies",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView storyCrossfader",
+    "group" : 1
+  }, {
+    "id" : "android.widget.ImageView blurContainer",
+    "group" : 1
+  }, {
+    "id" : "android.widget.FrameLayout storyCaptionContainer",
+    "group" : 1
+  }, {
+    "id" : "android.widget.FrameLayout storyContentContainer",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback callback",
+    "group" : 1
+  }, {
+    "id" : "java.util.List chrome",
+    "group" : 1
+  }, {
+    "id" : "android.animation.AnimatorSet animatorSet",
+    "group" : 1
+  }, {
+    "id" : "kotlin.Lazy viewModel$delegate",
+    "group" : 1
+  }, {
+    "id" : "kotlin.Lazy sharedViewModel$delegate",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.util.LifecycleDisposable lifecycleDisposable",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.util.LifecycleDisposable timeoutDisposable",
+    "group" : 1
+  }, {
+    "id" : "long MAX_VIDEO_PLAYBACK_DURATION",
+    "group" : 1
+  }, {
+    "id" : "long MIN_GIF_LOOPS",
+    "group" : 1
+  }, {
+    "id" : "long MIN_GIF_PLAYBACK_DURATION",
+    "group" : 1
+  }, {
+    "id" : "long MIN_TEXT_STORY_PLAYBACK",
+    "group" : 1
+  }, {
+    "id" : "long CHARACTERS_PER_SECOND",
+    "group" : 1
+  }, {
+    "id" : "long DEFAULT_DURATION",
+    "group" : 1
+  }, {
+    "id" : "java.lang.String ARG_STORY_RECIPIENT_ID",
+    "group" : 1
+  }, {
+    "id" : "java.lang.String ARG_STORY_ID",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Companion Companion",
+    "group" : 1
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.recipients.RecipientId getStoryRecipientId()",
+    "group" : 2
+  }, {
+    "id" : "long getInitialStoryId()",
+    "group" : 2
+  }, {
+    "id" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "group" : 2
+  }, {
+    "id" : "void onResume()",
+    "group" : 2
+  }, {
+    "id" : "void onPause()",
+    "group" : 2
+  }, {
+    "id" : "void onDestroyView()",
+    "group" : 2
+  }, {
+    "id" : "void onFinishForwardAction()",
+    "group" : 2
+  }, {
+    "id" : "void onDismissForwardSheet()",
+    "group" : 2
+  }, {
+    "id" : "long calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "group" : 2
+  }, {
+    "id" : "float getVideoPlaybackPosition(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "group" : 2
+  }, {
+    "id" : "long getVideoPlaybackDuration(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "group" : 2
+  }, {
+    "id" : "void hideChromeImmediate()",
+    "group" : 2
+  }, {
+    "id" : "void hideChrome()",
+    "group" : 2
+  }, {
+    "id" : "void showChrome()",
+    "group" : 2
+  }, {
+    "id" : "void animateChrome(float)",
+    "group" : 2
+  }, {
+    "id" : "void adjustConstraintsForScreenDimensions(android.view.View, android.view.View, androidx.cardview.widget.CardView)",
+    "group" : 2
+  }, {
+    "id" : "void resumeProgress()",
+    "group" : 2
+  }, {
+    "id" : "void pauseProgress()",
+    "group" : 2
+  }, {
+    "id" : "void startReply()",
+    "group" : 2
+  }, {
+    "id" : "void onStartDirectReply(long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.reply.tabs.StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
+    "group" : 2
+  }, {
+    "id" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "group" : 2
+  }, {
+    "id" : "void presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void onStateChanged(org.thoughtcrime.securesms.stories.StorySlateView$State, long)",
+    "group" : 2
+  }, {
+    "id" : "void presentDistributionList(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentBlur(android.widget.ImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentCaption(android.widget.TextView, android.widget.TextView, android.view.View, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void onShowCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "void onHideCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "void presentFrom(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentDate(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentSenderAvatar(org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentGroupAvatar(org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "group" : 2
+  }, {
+    "id" : "androidx.fragment.app.Fragment createFragmentForPost(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void setIsDisplayingLinkPreviewTooltip(boolean)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate getVideoControlsDelegate()",
+    "group" : 2
+  }, {
+    "id" : "void displayMoreContextMenu(android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "boolean singleTapOnMedia()",
+    "group" : 2
+  }, {
+    "id" : "void onMediaReady()",
+    "group" : 2
+  }, {
+    "id" : "void mediaNotAvailable()",
+    "group" : 2
+  }, {
+    "id" : "void onReadyToAnimate()",
+    "group" : 2
+  }, {
+    "id" : "void onAnimationStarted()",
+    "group" : 2
+  }, {
+    "id" : "void onAnimationFinished()",
+    "group" : 2
+  }, {
+    "id" : "void <init>()",
+    "group" : 2
+  }, {
+    "id" : "void <clinit>()",
+    "group" : 2
+  }, {
+    "id" : "boolean canSendMediaToStories()",
+    "group" : 2
+  }, {
+    "id" : "void access$startReply(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.StorySlateView access$getStorySlate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setStorySlate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.StorySlateView)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel access$getViewModel$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$displayMoreContextMenu(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate access$getVideoControlsDelegate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "float access$getVideoPlaybackPosition(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "group" : 2
+  }, {
+    "id" : "long access$getVideoPlaybackDuration(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.recipients.RecipientId access$getStoryRecipientId$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar access$getProgressBar$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setProgressBar$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView access$getStoryCrossfader$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setStoryCrossfader$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentSenderAvatar(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentGroupAvatar(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentFrom(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentDate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentDistributionList(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentCaption(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentBlur(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.ImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "android.widget.ImageView access$getBlurContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setBlurContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.ImageView)",
+    "group" : 2
+  }, {
+    "id" : "long access$calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "group" : 2
+  }, {
+    "id" : "long access$getDEFAULT_DURATION$cp()",
+    "group" : 2
+  }, {
+    "id" : "void access$presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "group" : 2
+  }, {
+    "id" : "void access$presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback access$getCallback$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setCallback$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback)",
+    "group" : 2
+  }, {
+    "id" : "void access$pauseProgress(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$resumeProgress(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$hideChromeImmediate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "android.widget.FrameLayout access$getStoryCaptionContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$setStoryCaptionContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.FrameLayout)",
+    "group" : 2
+  }, {
+    "id" : "void access$hideChrome(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$showChrome(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "void access$onStartDirectReply(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "group" : 2
+  }, {
+    "id" : "void access$onShowCaptionOverlay(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "void access$onHideCaptionOverlay(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View)",
+    "group" : 2
+  }, {
+    "id" : "org.thoughtcrime.securesms.util.LifecycleDisposable access$getLifecycleDisposable$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "long access$getInitialStoryId$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "group" : 2
+  }, {
+    "id" : "android.os.Bundle requireArguments()",
+    "group" : 2
+  }, {
+    "id" : "android.content.Context requireContext()",
+    "group" : 2
+  }, {
+    "id" : "androidx.lifecycle.LifecycleOwner getViewLifecycleOwner()",
+    "group" : 2
+  }, {
+    "id" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "group" : 2
+  }, {
+    "id" : "android.view.View requireView()",
+    "group" : 2
+  }, {
+    "id" : "android.content.res.Resources getResources()",
+    "group" : 2
+  }, {
+    "id" : "java.lang.String getString(int)",
+    "group" : 2
+  }, {
+    "id" : "java.lang.String getString(int, []java.lang.Object)",
+    "group" : 2
+  }, {
+    "id" : "android.content.Context getContext()",
+    "group" : 2
+  } ],
+  "links" : [ {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "target" : "kotlin.Lazy viewModel$delegate",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "target" : "kotlin.Lazy sharedViewModel$delegate",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.recipients.RecipientId getStoryRecipientId()",
+    "target" : "android.os.Bundle requireArguments()",
+    "value" : 1
+  }, {
+    "source" : "long getInitialStoryId()",
+    "target" : "android.os.Bundle requireArguments()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback callback",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.widget.ImageView blurContainer",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.widget.FrameLayout storyContentContainer",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.widget.FrameLayout storyCaptionContainer",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.widget.TextView viewsAndReplies",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView storyCrossfader",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView storyCrossfader",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.widget.TextView viewsAndReplies",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "java.util.List chrome",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "android.content.Context requireContext()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "androidx.lifecycle.LifecycleOwner getViewLifecycleOwner()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable timeoutDisposable",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable lifecycleDisposable",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onViewCreated(android.view.View, android.os.Bundle)",
+    "target" : "void adjustConstraintsForScreenDimensions(android.view.View, android.view.View, androidx.cardview.widget.CardView)",
+    "value" : 1
+  }, {
+    "source" : "void adjustConstraintsForScreenDimensions(android.view.View, android.view.View, androidx.cardview.widget.CardView)",
+    "target" : "android.view.View requireView()",
+    "value" : 1
+  }, {
+    "source" : "void adjustConstraintsForScreenDimensions(android.view.View, android.view.View, androidx.cardview.widget.CardView)",
+    "target" : "android.content.res.Resources getResources()",
+    "value" : 1
+  }, {
+    "source" : "void onResume()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onPause()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onDestroyView()",
+    "target" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "value" : 1
+  }, {
+    "source" : "void onDismissForwardSheet()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "long calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "target" : "long CHARACTERS_PER_SECOND",
+    "value" : 1
+  }, {
+    "source" : "long calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "target" : "long MIN_TEXT_STORY_PLAYBACK",
+    "value" : 1
+  }, {
+    "source" : "long getVideoPlaybackDuration(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "target" : "long MIN_GIF_LOOPS",
+    "value" : 1
+  }, {
+    "source" : "long getVideoPlaybackDuration(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "target" : "long MIN_GIF_PLAYBACK_DURATION",
+    "value" : 1
+  }, {
+    "source" : "long getVideoPlaybackDuration(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "target" : "long MAX_VIDEO_PLAYBACK_DURATION",
+    "value" : 1
+  }, {
+    "source" : "void hideChromeImmediate()",
+    "target" : "android.animation.AnimatorSet animatorSet",
+    "value" : 1
+  }, {
+    "source" : "void hideChromeImmediate()",
+    "target" : "java.util.List chrome",
+    "value" : 1
+  }, {
+    "source" : "void hideChrome()",
+    "target" : "void animateChrome(float)",
+    "value" : 1
+  }, {
+    "source" : "void animateChrome(float)",
+    "target" : "android.animation.AnimatorSet animatorSet",
+    "value" : 1
+  }, {
+    "source" : "void animateChrome(float)",
+    "target" : "java.util.List chrome",
+    "value" : 1
+  }, {
+    "source" : "void animateChrome(float)",
+    "target" : "android.animation.AnimatorSet animatorSet",
+    "value" : 1
+  }, {
+    "source" : "void showChrome()",
+    "target" : "void animateChrome(float)",
+    "value" : 1
+  }, {
+    "source" : "void resumeProgress()",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void resumeProgress()",
+    "target" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "value" : 1
+  }, {
+    "source" : "void resumeProgress()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void pauseProgress()",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void pauseProgress()",
+    "target" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "value" : 1
+  }, {
+    "source" : "void startReply()",
+    "target" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "value" : 1
+  }, {
+    "source" : "void startReply()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void startReply()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.reply.tabs.StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.reply.tabs.StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onStartDirectReply(long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "target" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "value" : 1
+  }, {
+    "source" : "void onStartDirectReply(long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "androidx.fragment.app.FragmentManager getChildFragmentManager()",
+    "value" : 1
+  }, {
+    "source" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "androidx.fragment.app.Fragment createFragmentForPost(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "void presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onStateChanged(org.thoughtcrime.securesms.stories.StorySlateView$State, long)",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable timeoutDisposable",
+    "value" : 1
+  }, {
+    "source" : "void onStateChanged(org.thoughtcrime.securesms.stories.StorySlateView$State, long)",
+    "target" : "android.widget.TextView viewsAndReplies",
+    "value" : 1
+  }, {
+    "source" : "void onStateChanged(org.thoughtcrime.securesms.stories.StorySlateView$State, long)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void presentDistributionList(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "android.content.Context requireContext()",
+    "value" : 1
+  }, {
+    "source" : "void onShowCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onHideCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void presentFrom(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "java.lang.String getString(int)",
+    "value" : 1
+  }, {
+    "source" : "void presentFrom(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "android.content.Context requireContext()",
+    "value" : 1
+  }, {
+    "source" : "void presentFrom(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "java.lang.String getString(int, []java.lang.Object)",
+    "value" : 1
+  }, {
+    "source" : "void presentDate(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "android.content.Context getContext()",
+    "value" : 1
+  }, {
+    "source" : "void presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "target" : "android.widget.TextView viewsAndReplies",
+    "value" : 1
+  }, {
+    "source" : "void presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "target" : "android.content.res.Resources getResources()",
+    "value" : 1
+  }, {
+    "source" : "void presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "target" : "java.lang.String getString(int, []java.lang.Object)",
+    "value" : 1
+  }, {
+    "source" : "void setIsDisplayingLinkPreviewTooltip(boolean)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate getVideoControlsDelegate()",
+    "target" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "value" : 1
+  }, {
+    "source" : "void displayMoreContextMenu(android.view.View)",
+    "target" : "android.content.Context requireContext()",
+    "value" : 1
+  }, {
+    "source" : "void displayMoreContextMenu(android.view.View)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onMediaReady()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void mediaNotAvailable()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onReadyToAnimate()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.StoryViewerViewModel getSharedViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationStarted()",
+    "target" : "android.widget.FrameLayout storyContentContainer",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationStarted()",
+    "target" : "android.widget.ImageView blurContainer",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationStarted()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationFinished()",
+    "target" : "android.widget.FrameLayout storyContentContainer",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationFinished()",
+    "target" : "android.widget.ImageView blurContainer",
+    "value" : 1
+  }, {
+    "source" : "void onAnimationFinished()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void <init>()",
+    "target" : "kotlin.Lazy viewModel$delegate",
+    "value" : 1
+  }, {
+    "source" : "void <init>()",
+    "target" : "kotlin.Lazy sharedViewModel$delegate",
+    "value" : 1
+  }, {
+    "source" : "void <init>()",
+    "target" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "value" : 1
+  }, {
+    "source" : "void <init>()",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable lifecycleDisposable",
+    "value" : 1
+  }, {
+    "source" : "void <init>()",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable timeoutDisposable",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Companion Companion",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long MAX_VIDEO_PLAYBACK_DURATION",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long MIN_GIF_LOOPS",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long MIN_GIF_PLAYBACK_DURATION",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long MIN_TEXT_STORY_PLAYBACK",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long CHARACTERS_PER_SECOND",
+    "value" : 1
+  }, {
+    "source" : "void <clinit>()",
+    "target" : "long DEFAULT_DURATION",
+    "value" : 1
+  }, {
+    "source" : "void access$startReply(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void startReply()",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.StorySlateView access$getStorySlate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "void access$setStorySlate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.StorySlateView)",
+    "target" : "org.thoughtcrime.securesms.stories.StorySlateView storySlate",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel access$getViewModel$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageViewModel getViewModel()",
+    "value" : 1
+  }, {
+    "source" : "void access$displayMoreContextMenu(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.view.View)",
+    "target" : "void displayMoreContextMenu(android.view.View)",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate access$getVideoControlsDelegate$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate videoControlsDelegate",
+    "value" : 1
+  }, {
+    "source" : "float access$getVideoPlaybackPosition(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "target" : "float getVideoPlaybackPosition(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "value" : 1
+  }, {
+    "source" : "long access$getVideoPlaybackDuration(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "target" : "long getVideoPlaybackDuration(org.thoughtcrime.securesms.mediapreview.VideoControlsDelegate$PlayerState)",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.recipients.RecipientId access$getStoryRecipientId$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.recipients.RecipientId getStoryRecipientId()",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar access$getProgressBar$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "void access$setProgressBar$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar)",
+    "target" : "org.thoughtcrime.securesms.components.segmentedprogressbar.SegmentedProgressBar progressBar",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView access$getStoryCrossfader$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView storyCrossfader",
+    "value" : 1
+  }, {
+    "source" : "void access$setStoryCrossfader$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView storyCrossfader",
+    "value" : 1
+  }, {
+    "source" : "void access$presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "target" : "void presentViewsAndReplies(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageState$ReplyState)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentSenderAvatar(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentSenderAvatar(org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentGroupAvatar(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentGroupAvatar(org.thoughtcrime.securesms.components.AvatarImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentFrom(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentFrom(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentDate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentDate(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentDistributionList(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentDistributionList(android.widget.TextView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentCaption(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentCaption(android.widget.TextView, android.widget.TextView, android.view.View, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentBlur(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.ImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentBlur(android.widget.ImageView, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "android.widget.ImageView access$getBlurContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "android.widget.ImageView blurContainer",
+    "value" : 1
+  }, {
+    "source" : "void access$setBlurContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.ImageView)",
+    "target" : "android.widget.ImageView blurContainer",
+    "value" : 1
+  }, {
+    "source" : "long access$calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "target" : "long calculateDurationForText(org.thoughtcrime.securesms.stories.viewer.page.StoryPost$Content$TextContent)",
+    "value" : 1
+  }, {
+    "source" : "long access$getDEFAULT_DURATION$cp()",
+    "target" : "long DEFAULT_DURATION",
+    "value" : 1
+  }, {
+    "source" : "void access$presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "target" : "void presentStory(org.thoughtcrime.securesms.stories.viewer.page.StoryPost, int)",
+    "value" : 1
+  }, {
+    "source" : "void access$presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "target" : "void presentSlate(org.thoughtcrime.securesms.stories.viewer.page.StoryPost)",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback access$getCallback$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback callback",
+    "value" : 1
+  }, {
+    "source" : "void access$setCallback$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback)",
+    "target" : "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment$Callback callback",
+    "value" : 1
+  }, {
+    "source" : "void access$pauseProgress(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void pauseProgress()",
+    "value" : 1
+  }, {
+    "source" : "void access$resumeProgress(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void resumeProgress()",
+    "value" : 1
+  }, {
+    "source" : "void access$hideChromeImmediate(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void hideChromeImmediate()",
+    "value" : 1
+  }, {
+    "source" : "android.widget.FrameLayout access$getStoryCaptionContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "android.widget.FrameLayout storyCaptionContainer",
+    "value" : 1
+  }, {
+    "source" : "void access$setStoryCaptionContainer$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.FrameLayout)",
+    "target" : "android.widget.FrameLayout storyCaptionContainer",
+    "value" : 1
+  }, {
+    "source" : "void access$hideChrome(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void hideChrome()",
+    "value" : 1
+  }, {
+    "source" : "void access$showChrome(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "void showChrome()",
+    "value" : 1
+  }, {
+    "source" : "void access$onStartDirectReply(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "target" : "void onStartDirectReply(long, org.thoughtcrime.securesms.recipients.RecipientId)",
+    "value" : 1
+  }, {
+    "source" : "void access$onShowCaptionOverlay(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View)",
+    "target" : "void onShowCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "value" : 1
+  }, {
+    "source" : "void access$onHideCaptionOverlay(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment, android.widget.TextView, android.widget.TextView, android.view.View)",
+    "target" : "void onHideCaptionOverlay(android.widget.TextView, android.widget.TextView, android.view.View)",
+    "value" : 1
+  }, {
+    "source" : "org.thoughtcrime.securesms.util.LifecycleDisposable access$getLifecycleDisposable$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "org.thoughtcrime.securesms.util.LifecycleDisposable lifecycleDisposable",
+    "value" : 1
+  }, {
+    "source" : "long access$getInitialStoryId$p(org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment)",
+    "target" : "long getInitialStoryId()",
+    "value" : 1
+  } ]
+}
+
+  drawEdgeBundlingGraph(graph);
+</script>
 </html>
