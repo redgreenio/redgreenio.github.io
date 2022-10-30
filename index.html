@@ -31,25 +31,28 @@
       background-color: black;
     }
 
-    #stats {
+    #panels {
       position: absolute;
       top: 0;
       left: 0;
       margin: 0.8em;
-      z-index: -1;
     }
 
-    #stats-title {
+    .panel-title {
       text-align: start;
       color: whitesmoke;
     }
 
-    .stat {
+    .property {
       padding-right: 0.8em;
     }
 
-    .stat-value {
+    .value {
       text-align: end;
+    }
+
+    #class-info {
+      margin-top: 0.8em;
     }
 </style>
 </head>
@@ -61,13 +64,37 @@
     <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
 
-  <div>
-    <table id="stats">
-      <tr><th id="stats-title" colspan="2">Stats</th></tr>
-      <tr><td class="stat">Fields</td><td id="fields-stat" class="stat-value">0</td></tr>
-      <tr><td class="stat">Methods</td><td id="methods-stat" class="stat-value">0</td></tr>
-      <tr><td class="stat">Relationships</td><td id="relationships-stat" class="stat-value">0</td></tr>
-    </table>
+  <div id="panels">
+    <div>
+      <table id="stats">
+        <tr>
+          <th class="panel-title" colspan="2">Stats</th>
+        </tr>
+        <tr>
+          <td class="property">Fields</td>
+          <td id="fields-stat" class="value">0</td>
+        </tr>
+        <tr>
+          <td class="property">Methods</td>
+          <td id="methods-stat" class="value">0</td>
+        </tr>
+        <tr>
+          <td class="property">Relationships</td>
+          <td id="relationships-stat" class="value">0</td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <table id="class-info">
+        <tr>
+          <th class="panel-title" colspan="2">Class</th>
+        </tr>
+        <tr>
+          <td class="property">Name</td>
+          <td id="class-name" class="value"></td>
+        </tr>
+      </table>
+    </div>
   </div>
 </body>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -205,7 +232,7 @@
   }
 
   const graph = {
-    "nodes" : [{
+    "nodes": [{
       "id": "SegmentedProgressBar progressBar",
       "group": 1
     }, {
@@ -227,7 +254,7 @@
       "id": "FrameLayout storyContentContainer",
       "group": 1
     }, {
-      "id": "StoryViewerPageFragment$Callback callback",
+      "id": "Callback callback",
       "group": 1
     }, {
       "id": "List chrome",
@@ -275,7 +302,7 @@
       "id": "String ARG_STORY_ID",
       "group": 1
     }, {
-      "id": "StoryViewerPageFragment$Companion Companion",
+      "id": "Companion Companion",
       "group": 1
     }, {
       "id": "StoryViewerPageViewModel getViewModel()",
@@ -308,13 +335,13 @@
       "id": "void onDismissForwardSheet()",
       "group": 2
     }, {
-      "id": "long calculateDurationForText(StoryPost$Content$TextContent)",
+      "id": "long calculateDurationForText(TextContent)",
       "group": 2
     }, {
-      "id": "float getVideoPlaybackPosition(VideoControlsDelegate$PlayerState)",
+      "id": "float getVideoPlaybackPosition(PlayerState)",
       "group": 2
     }, {
-      "id": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
+      "id": "long getVideoPlaybackDuration(PlayerState)",
       "group": 2
     }, {
       "id": "void hideChromeImmediate()",
@@ -344,7 +371,7 @@
       "id": "void onStartDirectReply(long, RecipientId)",
       "group": 2
     }, {
-      "id": "StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
+      "id": "StartPage getViewsAndRepliesDialogStartPage()",
       "group": 2
     }, {
       "id": "void presentStory(StoryPost, int)",
@@ -353,7 +380,7 @@
       "id": "void presentSlate(StoryPost)",
       "group": 2
     }, {
-      "id": "void onStateChanged(StorySlateView$State, long)",
+      "id": "void onStateChanged(State, long)",
       "group": 2
     }, {
       "id": "void presentDistributionList(TextView, StoryPost)",
@@ -383,7 +410,7 @@
       "id": "void presentGroupAvatar(AvatarImageView, StoryPost)",
       "group": 2
     }, {
-      "id": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
+      "id": "void presentViewsAndReplies(StoryPost, ReplyState)",
       "group": 2
     }, {
       "id": "Fragment createFragmentForPost(StoryPost)",
@@ -464,835 +491,841 @@
       "id": "void setArguments(Bundle)",
       "group": 2
     }],
-      "links" : [{
-        "source": "StoryViewerPageViewModel getViewModel()",
-        "target": "Lazy viewModel$delegate",
-        "value": 1
-      }, {
-        "source": "StoryViewerViewModel getSharedViewModel()",
-        "target": "Lazy sharedViewModel$delegate",
-        "value": 1
-      }, {
-        "source": "RecipientId getStoryRecipientId()",
-        "target": "Bundle requireArguments()",
-        "value": 1
-      }, {
-        "source": "long getInitialStoryId()",
-        "target": "Bundle requireArguments()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoryViewerPageFragment$Callback callback",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "ImageView blurContainer",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FrameLayout storyContentContainer",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FrameLayout storyCaptionContainer",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "TextView viewsAndReplies",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoriesSharedElementCrossFaderView storyCrossfader",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoriesSharedElementCrossFaderView storyCrossfader",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "TextView viewsAndReplies",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "List chrome",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "LifecycleOwner getViewLifecycleOwner()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "LifecycleDisposable timeoutDisposable",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "LifecycleDisposable lifecycleDisposable",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FragmentActivity requireActivity()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "View requireView()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "Context getContext()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoryViewerViewModel getSharedViewModel()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
-        "value": 1
-      }, {
-        "source": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
-        "target": "View requireView()",
-        "value": 1
-      }, {
-        "source": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
-        "target": "Resources getResources()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "float getVideoPlaybackPosition(VideoControlsDelegate$PlayerState)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentSenderAvatar(AvatarImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentGroupAvatar(AvatarImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentCaption(TextView, TextView, View, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "ImageView blurContainer",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentBlur(ImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "long DEFAULT_DURATION",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "StoryViewerPageFragment$Callback callback",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "FrameLayout storyCaptionContainer",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void startReply()",
-        "value": 1
-      }, {
-        "source": "void startReply()",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void displayMoreContextMenu(View)",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "void startActivity(Intent)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
-        "value": 1
-      }, {
-        "source": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
-        "target": "long MIN_GIF_LOOPS",
-        "value": 1
-      }, {
-        "source": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
-        "target": "long MIN_GIF_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
-        "target": "long MAX_VIDEO_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "RecipientId getStoryRecipientId()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void onReadyToAnimate()",
-        "value": 1
-      }, {
-        "source": "void onReadyToAnimate()",
-        "target": "StoryViewerViewModel getSharedViewModel()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
-        "value": 1
-      }, {
-        "source": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
-        "target": "TextView viewsAndReplies",
-        "value": 1
-      }, {
-        "source": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
-        "target": "Resources getResources()",
-        "value": 1
-      }, {
-        "source": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
-        "target": "String getString(int, []Object)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentFrom(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void presentFrom(TextView, StoryPost)",
-        "target": "String getString(int)",
-        "value": 1
-      }, {
-        "source": "void presentFrom(TextView, StoryPost)",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void presentFrom(TextView, StoryPost)",
-        "target": "String getString(int, []Object)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentDate(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void presentDate(TextView, StoryPost)",
-        "target": "Context getContext()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentDistributionList(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void presentDistributionList(TextView, StoryPost)",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "long calculateDurationForText(StoryPost$Content$TextContent)",
-        "value": 1
-      }, {
-        "source": "long calculateDurationForText(StoryPost$Content$TextContent)",
-        "target": "long CHARACTERS_PER_SECOND",
-        "value": 1
-      }, {
-        "source": "long calculateDurationForText(StoryPost$Content$TextContent)",
-        "target": "long MIN_TEXT_STORY_PLAYBACK",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentStory(StoryPost, int)",
-        "value": 1
-      }, {
-        "source": "void presentStory(StoryPost, int)",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void presentStory(StoryPost, int)",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void presentStory(StoryPost, int)",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void presentStory(StoryPost, int)",
-        "target": "Fragment createFragmentForPost(StoryPost)",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void presentSlate(StoryPost)",
-        "value": 1
-      }, {
-        "source": "void presentSlate(StoryPost)",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void pauseProgress()",
-        "value": 1
-      }, {
-        "source": "void pauseProgress()",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void pauseProgress()",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void resumeProgress()",
-        "value": 1
-      }, {
-        "source": "void resumeProgress()",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void resumeProgress()",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void hideChromeImmediate()",
-        "value": 1
-      }, {
-        "source": "void hideChromeImmediate()",
-        "target": "AnimatorSet animatorSet",
-        "value": 1
-      }, {
-        "source": "void hideChromeImmediate()",
-        "target": "List chrome",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void onStartDirectReply(long, RecipientId)",
-        "value": 1
-      }, {
-        "source": "void onStartDirectReply(long, RecipientId)",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void startReply()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "LifecycleDisposable lifecycleDisposable",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "StoryViewerPageFragment$Callback callback",
-        "value": 1
-      }, {
-        "source": "void presentStory(StoryPost, int)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void presentSlate(StoryPost)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void resumeProgress()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void hideChrome()",
-        "value": 1
-      }, {
-        "source": "void hideChrome()",
-        "target": "void animateChrome(float)",
-        "value": 1
-      }, {
-        "source": "void animateChrome(float)",
-        "target": "AnimatorSet animatorSet",
-        "value": 1
-      }, {
-        "source": "void animateChrome(float)",
-        "target": "List chrome",
-        "value": 1
-      }, {
-        "source": "void animateChrome(float)",
-        "target": "AnimatorSet animatorSet",
-        "value": 1
-      }, {
-        "source": "void onViewCreated(View, Bundle)",
-        "target": "void showChrome()",
-        "value": 1
-      }, {
-        "source": "void showChrome()",
-        "target": "void animateChrome(float)",
-        "value": 1
-      }, {
-        "source": "void onStartDirectReply(long, RecipientId)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void startReply()",
-        "target": "StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
-        "value": 1
-      }, {
-        "source": "StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void displayMoreContextMenu(View)",
-        "target": "RecipientId getStoryRecipientId()",
-        "value": 1
-      }, {
-        "source": "void onResume()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onPause()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onDestroyView()",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void onDismissForwardSheet()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onStateChanged(StorySlateView$State, long)",
-        "target": "LifecycleDisposable timeoutDisposable",
-        "value": 1
-      }, {
-        "source": "void onStateChanged(StorySlateView$State, long)",
-        "target": "TextView viewsAndReplies",
-        "value": 1
-      }, {
-        "source": "void onStateChanged(StorySlateView$State, long)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onStateChanged(StorySlateView$State, long)",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void onShowCaptionOverlay(TextView, TextView, View)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onShowCaptionOverlay(TextView, TextView, View)",
-        "target": "void onHideCaptionOverlay(TextView, TextView, View)",
-        "value": 1
-      }, {
-        "source": "void onHideCaptionOverlay(TextView, TextView, View)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void setIsDisplayingLinkPreviewTooltip(boolean)",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "VideoControlsDelegate getVideoControlsDelegate()",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void onMediaReady()",
-        "target": "StoryViewerViewModel getSharedViewModel()",
-        "value": 1
-      }, {
-        "source": "void mediaNotAvailable()",
-        "target": "StoryViewerViewModel getSharedViewModel()",
-        "value": 1
-      }, {
-        "source": "void onAnimationStarted()",
-        "target": "FrameLayout storyContentContainer",
-        "value": 1
-      }, {
-        "source": "void onAnimationStarted()",
-        "target": "ImageView blurContainer",
-        "value": 1
-      }, {
-        "source": "void onAnimationStarted()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void onAnimationFinished()",
-        "target": "FrameLayout storyContentContainer",
-        "value": 1
-      }, {
-        "source": "void onAnimationFinished()",
-        "target": "ImageView blurContainer",
-        "value": 1
-      }, {
-        "source": "void onAnimationFinished()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "Lazy viewModel$delegate",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "Lazy sharedViewModel$delegate",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "LifecycleDisposable lifecycleDisposable",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "LifecycleDisposable timeoutDisposable",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "Fragment requireParentFragment()",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "RecipientId getStoryRecipientId()",
-        "value": 1
-      }, {
-        "source": "void <init>()",
-        "target": "long getInitialStoryId()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewerPageFragment$Companion Companion",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MAX_VIDEO_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_GIF_LOOPS",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_GIF_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_TEXT_STORY_PLAYBACK",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long CHARACTERS_PER_SECOND",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long DEFAULT_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void setArguments(Bundle)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Lazy viewModel$delegate",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Lazy sharedViewModel$delegate",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Bundle requireArguments()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewerPageFragment$Callback callback",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "ImageView blurContainer",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "FrameLayout storyContentContainer",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "FrameLayout storyCaptionContainer",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StorySlateView storySlate",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "SegmentedProgressBar progressBar",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "TextView viewsAndReplies",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoriesSharedElementCrossFaderView storyCrossfader",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "List chrome",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Context requireContext()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "LifecycleOwner getViewLifecycleOwner()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "LifecycleDisposable timeoutDisposable",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "LifecycleDisposable lifecycleDisposable",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "FragmentManager getChildFragmentManager()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long CHARACTERS_PER_SECOND",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_TEXT_STORY_PLAYBACK",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_GIF_LOOPS",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MIN_GIF_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long MAX_VIDEO_PLAYBACK_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "AnimatorSet animatorSet",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "View requireView()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Resources getResources()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "VideoControlsDelegate videoControlsDelegate",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Fragment createFragmentForPost(StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "String getString(int)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "String getString(int, []Object)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "Context getContext()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewerPageFragment$Companion Companion",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long DEFAULT_DURATION",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "float getVideoPlaybackPosition(VideoControlsDelegate$PlayerState)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentSenderAvatar(AvatarImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentGroupAvatar(AvatarImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentCaption(TextView, TextView, View, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentBlur(ImageView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void <init>()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewerPageViewModel getViewModel()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewerViewModel getSharedViewModel()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void animateChrome(float)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void startReply()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void displayMoreContextMenu(View)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long getVideoPlaybackDuration(VideoControlsDelegate$PlayerState)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "RecipientId getStoryRecipientId()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentViewsAndReplies(StoryPost, StoryViewerPageState$ReplyState)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentFrom(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentDate(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentDistributionList(TextView, StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long calculateDurationForText(StoryPost$Content$TextContent)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentStory(StoryPost, int)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void presentSlate(StoryPost)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void pauseProgress()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void resumeProgress()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void hideChromeImmediate()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void onStartDirectReply(long, RecipientId)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "long getInitialStoryId()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "StoryViewsAndRepliesDialogFragment$StartPage getViewsAndRepliesDialogStartPage()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void hideChrome()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void showChrome()",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void onShowCaptionOverlay(TextView, TextView, View)",
-        "value": 1
-      }, {
-        "source": "void <clinit>()",
-        "target": "void onHideCaptionOverlay(TextView, TextView, View)",
-        "value": 1
-      }]
+    "links": [{
+      "source": "StoryViewerPageViewModel getViewModel()",
+      "target": "Lazy viewModel$delegate",
+      "value": 1
+    }, {
+      "source": "StoryViewerViewModel getSharedViewModel()",
+      "target": "Lazy sharedViewModel$delegate",
+      "value": 1
+    }, {
+      "source": "RecipientId getStoryRecipientId()",
+      "target": "Bundle requireArguments()",
+      "value": 1
+    }, {
+      "source": "long getInitialStoryId()",
+      "target": "Bundle requireArguments()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "Callback callback",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "ImageView blurContainer",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FrameLayout storyContentContainer",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FrameLayout storyCaptionContainer",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "TextView viewsAndReplies",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StoriesSharedElementCrossFaderView storyCrossfader",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StoriesSharedElementCrossFaderView storyCrossfader",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "TextView viewsAndReplies",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "List chrome",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "LifecycleOwner getViewLifecycleOwner()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "LifecycleDisposable timeoutDisposable",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "LifecycleDisposable lifecycleDisposable",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FragmentActivity requireActivity()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "View requireView()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "Context getContext()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "StoryViewerViewModel getSharedViewModel()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
+      "value": 1
+    }, {
+      "source": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
+      "target": "View requireView()",
+      "value": 1
+    }, {
+      "source": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
+      "target": "Resources getResources()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "float getVideoPlaybackPosition(PlayerState)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentSenderAvatar(AvatarImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentGroupAvatar(AvatarImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentCaption(TextView, TextView, View, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "ImageView blurContainer",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentBlur(ImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "long DEFAULT_DURATION",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "Callback callback",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "FrameLayout storyCaptionContainer",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void startReply()",
+      "value": 1
+    }, {
+      "source": "void startReply()",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void displayMoreContextMenu(View)",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "void startActivity(Intent)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "long getVideoPlaybackDuration(PlayerState)",
+      "value": 1
+    }, {
+      "source": "long getVideoPlaybackDuration(PlayerState)",
+      "target": "long MIN_GIF_LOOPS",
+      "value": 1
+    }, {
+      "source": "long getVideoPlaybackDuration(PlayerState)",
+      "target": "long MIN_GIF_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "long getVideoPlaybackDuration(PlayerState)",
+      "target": "long MAX_VIDEO_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "RecipientId getStoryRecipientId()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void onReadyToAnimate()",
+      "value": 1
+    }, {
+      "source": "void onReadyToAnimate()",
+      "target": "StoryViewerViewModel getSharedViewModel()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentViewsAndReplies(StoryPost, ReplyState)",
+      "value": 1
+    }, {
+      "source": "void presentViewsAndReplies(StoryPost, ReplyState)",
+      "target": "TextView viewsAndReplies",
+      "value": 1
+    }, {
+      "source": "void presentViewsAndReplies(StoryPost, ReplyState)",
+      "target": "Resources getResources()",
+      "value": 1
+    }, {
+      "source": "void presentViewsAndReplies(StoryPost, ReplyState)",
+      "target": "String getString(int, []Object)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentFrom(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void presentFrom(TextView, StoryPost)",
+      "target": "String getString(int)",
+      "value": 1
+    }, {
+      "source": "void presentFrom(TextView, StoryPost)",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void presentFrom(TextView, StoryPost)",
+      "target": "String getString(int, []Object)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentDate(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void presentDate(TextView, StoryPost)",
+      "target": "Context getContext()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentDistributionList(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void presentDistributionList(TextView, StoryPost)",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "long calculateDurationForText(TextContent)",
+      "value": 1
+    }, {
+      "source": "long calculateDurationForText(TextContent)",
+      "target": "long CHARACTERS_PER_SECOND",
+      "value": 1
+    }, {
+      "source": "long calculateDurationForText(TextContent)",
+      "target": "long MIN_TEXT_STORY_PLAYBACK",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentStory(StoryPost, int)",
+      "value": 1
+    }, {
+      "source": "void presentStory(StoryPost, int)",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void presentStory(StoryPost, int)",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void presentStory(StoryPost, int)",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void presentStory(StoryPost, int)",
+      "target": "Fragment createFragmentForPost(StoryPost)",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void presentSlate(StoryPost)",
+      "value": 1
+    }, {
+      "source": "void presentSlate(StoryPost)",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void pauseProgress()",
+      "value": 1
+    }, {
+      "source": "void pauseProgress()",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void pauseProgress()",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void resumeProgress()",
+      "value": 1
+    }, {
+      "source": "void resumeProgress()",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void resumeProgress()",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void hideChromeImmediate()",
+      "value": 1
+    }, {
+      "source": "void hideChromeImmediate()",
+      "target": "AnimatorSet animatorSet",
+      "value": 1
+    }, {
+      "source": "void hideChromeImmediate()",
+      "target": "List chrome",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void onStartDirectReply(long, RecipientId)",
+      "value": 1
+    }, {
+      "source": "void onStartDirectReply(long, RecipientId)",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void startReply()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "LifecycleDisposable lifecycleDisposable",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "Callback callback",
+      "value": 1
+    }, {
+      "source": "void presentStory(StoryPost, int)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void presentSlate(StoryPost)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void resumeProgress()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void hideChrome()",
+      "value": 1
+    }, {
+      "source": "void hideChrome()",
+      "target": "void animateChrome(float)",
+      "value": 1
+    }, {
+      "source": "void animateChrome(float)",
+      "target": "AnimatorSet animatorSet",
+      "value": 1
+    }, {
+      "source": "void animateChrome(float)",
+      "target": "List chrome",
+      "value": 1
+    }, {
+      "source": "void animateChrome(float)",
+      "target": "AnimatorSet animatorSet",
+      "value": 1
+    }, {
+      "source": "void onViewCreated(View, Bundle)",
+      "target": "void showChrome()",
+      "value": 1
+    }, {
+      "source": "void showChrome()",
+      "target": "void animateChrome(float)",
+      "value": 1
+    }, {
+      "source": "void onStartDirectReply(long, RecipientId)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void startReply()",
+      "target": "StartPage getViewsAndRepliesDialogStartPage()",
+      "value": 1
+    }, {
+      "source": "StartPage getViewsAndRepliesDialogStartPage()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void displayMoreContextMenu(View)",
+      "target": "RecipientId getStoryRecipientId()",
+      "value": 1
+    }, {
+      "source": "void onResume()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onPause()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onDestroyView()",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void onDismissForwardSheet()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onStateChanged(State, long)",
+      "target": "LifecycleDisposable timeoutDisposable",
+      "value": 1
+    }, {
+      "source": "void onStateChanged(State, long)",
+      "target": "TextView viewsAndReplies",
+      "value": 1
+    }, {
+      "source": "void onStateChanged(State, long)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onStateChanged(State, long)",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void onShowCaptionOverlay(TextView, TextView, View)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onShowCaptionOverlay(TextView, TextView, View)",
+      "target": "void onHideCaptionOverlay(TextView, TextView, View)",
+      "value": 1
+    }, {
+      "source": "void onHideCaptionOverlay(TextView, TextView, View)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void setIsDisplayingLinkPreviewTooltip(boolean)",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "VideoControlsDelegate getVideoControlsDelegate()",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void onMediaReady()",
+      "target": "StoryViewerViewModel getSharedViewModel()",
+      "value": 1
+    }, {
+      "source": "void mediaNotAvailable()",
+      "target": "StoryViewerViewModel getSharedViewModel()",
+      "value": 1
+    }, {
+      "source": "void onAnimationStarted()",
+      "target": "FrameLayout storyContentContainer",
+      "value": 1
+    }, {
+      "source": "void onAnimationStarted()",
+      "target": "ImageView blurContainer",
+      "value": 1
+    }, {
+      "source": "void onAnimationStarted()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void onAnimationFinished()",
+      "target": "FrameLayout storyContentContainer",
+      "value": 1
+    }, {
+      "source": "void onAnimationFinished()",
+      "target": "ImageView blurContainer",
+      "value": 1
+    }, {
+      "source": "void onAnimationFinished()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "Lazy viewModel$delegate",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "Lazy sharedViewModel$delegate",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "LifecycleDisposable lifecycleDisposable",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "LifecycleDisposable timeoutDisposable",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "Fragment requireParentFragment()",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "RecipientId getStoryRecipientId()",
+      "value": 1
+    }, {
+      "source": "void <init>()",
+      "target": "long getInitialStoryId()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Companion Companion",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MAX_VIDEO_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_GIF_LOOPS",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_GIF_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_TEXT_STORY_PLAYBACK",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long CHARACTERS_PER_SECOND",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long DEFAULT_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void setArguments(Bundle)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Lazy viewModel$delegate",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Lazy sharedViewModel$delegate",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Bundle requireArguments()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Callback callback",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "ImageView blurContainer",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "FrameLayout storyContentContainer",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "FrameLayout storyCaptionContainer",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "StorySlateView storySlate",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "SegmentedProgressBar progressBar",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "TextView viewsAndReplies",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "StoriesSharedElementCrossFaderView storyCrossfader",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "List chrome",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Context requireContext()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "LifecycleOwner getViewLifecycleOwner()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "LifecycleDisposable timeoutDisposable",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "LifecycleDisposable lifecycleDisposable",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "FragmentManager getChildFragmentManager()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long CHARACTERS_PER_SECOND",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_TEXT_STORY_PLAYBACK",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_GIF_LOOPS",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MIN_GIF_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long MAX_VIDEO_PLAYBACK_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "AnimatorSet animatorSet",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "View requireView()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Resources getResources()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "VideoControlsDelegate videoControlsDelegate",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Fragment createFragmentForPost(StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "String getString(int)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "String getString(int, []Object)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Context getContext()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "Companion Companion",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long DEFAULT_DURATION",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "float getVideoPlaybackPosition(PlayerState)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentSenderAvatar(AvatarImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentGroupAvatar(AvatarImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentCaption(TextView, TextView, View, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentBlur(ImageView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void <init>()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "StoryViewerPageViewModel getViewModel()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "StoryViewerViewModel getSharedViewModel()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void adjustConstraintsForScreenDimensions(View, View, CardView)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void animateChrome(float)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void startReply()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void displayMoreContextMenu(View)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long getVideoPlaybackDuration(PlayerState)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "RecipientId getStoryRecipientId()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentViewsAndReplies(StoryPost, ReplyState)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentFrom(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentDate(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentDistributionList(TextView, StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long calculateDurationForText(TextContent)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentStory(StoryPost, int)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void presentSlate(StoryPost)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void pauseProgress()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void resumeProgress()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void hideChromeImmediate()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void onStartDirectReply(long, RecipientId)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "long getInitialStoryId()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "StartPage getViewsAndRepliesDialogStartPage()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void hideChrome()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void showChrome()",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void onShowCaptionOverlay(TextView, TextView, View)",
+      "value": 1
+    }, {
+      "source": "void <clinit>()",
+      "target": "void onHideCaptionOverlay(TextView, TextView, View)",
+      "value": 1
+    }],
+    "meta": {
+      "classInfo": {
+        "name": "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment",
+        "extends": "androidx.fragment.app.Fragment"
+      }
+    }
   }
 
   function stats(graph) {
@@ -1305,7 +1338,16 @@
     document.getElementById('relationships-stat').textContent = relationships;
   }
 
+  function setClassInfo(classInfo) {
+    document.getElementById('class-name').textContent = classInfo.name;
+
+    if (classInfo.extends != null) {
+      document.getElementById('class-info').innerHTML += '<td class="property">Extends</td>' + '<td class="value">' + classInfo.extends + '</td>';
+    }
+  }
+
   drawEdgeBundlingGraph(graph);
   stats(graph);
+  setClassInfo(graph.meta.classInfo);
 </script>
 </html>
