@@ -44,17 +44,18 @@
     }
 
     .property {
+      vertical-align: top;
       padding-right: 0.8em;
     }
 
-    .value {
+    .value-number {
       text-align: end;
     }
 
     #class-info {
       margin-top: 0.8em;
     }
-</style>
+  </style>
 </head>
 
 <body>
@@ -72,15 +73,15 @@
         </tr>
         <tr>
           <td class="property">Fields</td>
-          <td id="fields-stat" class="value">0</td>
+          <td id="fields-stat" class="value-number">0</td>
         </tr>
         <tr>
           <td class="property">Methods</td>
-          <td id="methods-stat" class="value">0</td>
+          <td id="methods-stat" class="value-number">0</td>
         </tr>
         <tr>
           <td class="property">Relationships</td>
-          <td id="relationships-stat" class="value">0</td>
+          <td id="relationships-stat" class="value-number">0</td>
         </tr>
       </table>
     </div>
@@ -91,7 +92,7 @@
         </tr>
         <tr>
           <td class="property">Name</td>
-          <td id="class-name" class="value"></td>
+          <td id="class-name"></td>
         </tr>
       </table>
     </div>
@@ -1323,7 +1324,8 @@
     "meta": {
       "classInfo": {
         "name": "org.thoughtcrime.securesms.stories.viewer.page.StoryViewerPageFragment",
-        "extends": "androidx.fragment.app.Fragment"
+        "extends": "androidx.fragment.app.Fragment",
+        "implements": ["org.thoughtcrime.securesms.mediapreview.MediaPreviewFragment$Events", "org.thoughtcrime.securesms.conversation.mutiselect.forward.MultiselectForwardBottomSheet$Callback", "org.thoughtcrime.securesms.stories.StorySlateView$Callback", "org.thoughtcrime.securesms.stories.viewer.text.StoryTextPostPreviewFragment$Callback", "org.thoughtcrime.securesms.stories.viewer.reply.StoriesSharedElementCrossFaderView$Callback"]
       }
     }
   }
@@ -1342,7 +1344,12 @@
     document.getElementById('class-name').textContent = classInfo.name;
 
     if (classInfo.extends != null) {
-      document.getElementById('class-info').innerHTML += '<td class="property">Extends</td>' + '<td class="value">' + classInfo.extends + '</td>';
+      document.getElementById('class-info').innerHTML += '<td class="property">Extends</td>' + '<td>' + classInfo.extends + '</td>';
+    }
+    if (classInfo.implements != null) {
+      const interfaces = classInfo.implements.join("\n").trim();
+
+      document.getElementById('class-info').innerHTML += '<td class="property">Implements</td>' + '<td style="white-space:pre-wrap; word-wrap:break-word">' + interfaces + '</td>';
     }
   }
 
