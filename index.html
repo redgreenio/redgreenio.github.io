@@ -55,7 +55,11 @@
     #class-info {
       margin-top: 0.8em;
     }
-  </style>
+
+    .package-name {
+      color: darkgray;
+    }
+</style>
 </head>
 
 <body>
@@ -1363,6 +1367,34 @@
     document.getElementById('relationships-stat').textContent = relationships;
   }
 
+  function getPackageName(qualifiedType) {
+    const dotBeforeTypeName = qualifiedType.lastIndexOf('.');
+    if (dotBeforeTypeName !== -1) {
+      return qualifiedType.slice(0, dotBeforeTypeName);
+    }
+    return null;
+  }
+
+  function getClassName(qualifiedType) {
+    const dotBeforeTypeName = qualifiedType.lastIndexOf('.');
+    if (dotBeforeTypeName !== -1) {
+      return qualifiedType.slice(dotBeforeTypeName + 1);
+    }
+    return qualifiedType;
+  }
+
+  function typeNameHtml(qualifiedType) {
+    const shortenedType = shortenType(qualifiedType);
+    const packageName = getPackageName(shortenedType);
+    const className = getClassName(qualifiedType);
+
+    if (packageName != null) {
+      return '<td><div><span class="package-name">' + packageName + '.</span><span>' + className + '</span></div></td>'
+    } else {
+      return '<td><div><span>' + className + '</span></div></td>'
+    }
+  }
+
   function setClassInfo(classInfo) {
     // clear the table
     const classInfoTable = document.getElementById('class-info');
@@ -1378,7 +1410,7 @@
     classInfoTable.appendChild(tableRow);
 
     tableRow = document.createElement('tr');
-    tableRow.innerHTML = '<td>' + shortenType(classInfo.name) + '</td>';
+    tableRow.innerHTML = typeNameHtml(classInfo.name);
     classInfoTable.appendChild(tableRow);
 
     // add 'Extends' element
@@ -1389,7 +1421,7 @@
     }
 
     tableRow = document.createElement('tr');
-    tableRow.innerHTML = '<td>' + shortenType(classInfo.extends) + '</td>';
+    tableRow.innerHTML = typeNameHtml(classInfo.extends);
     classInfoTable.appendChild(tableRow);
 
     // add 'Implements' element
@@ -1402,7 +1434,7 @@
 
       for (var i = 0; i < interfaces.length; i++) {
         tableRow = document.createElement('tr');
-        tableRow.innerHTML = '<td>' + shortenType(interfaces[i]) + '</td>';
+        tableRow.innerHTML = typeNameHtml(interfaces[i]);
         classInfoTable.appendChild(tableRow);
       }
     }
