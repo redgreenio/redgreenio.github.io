@@ -1389,9 +1389,9 @@
     const className = getClassName(qualifiedType);
 
     if (packageName != null) {
-      return '<td><div><span class="package-name">' + packageName + '.</span><span>' + className + '</span></div></td>'
+      return '<td><div title=' + qualifiedType + '><span class="package-name">' + packageName + '.</span><span>' + className + '</span></div></td>'
     } else {
-      return '<td><div><span>' + className + '</span></div></td>'
+      return '<td><div title=' + qualifiedType + '><span>' + className + '</span></div></td>'
     }
   }
 
