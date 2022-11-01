@@ -64,11 +64,14 @@
       color: darkgray;
     }
 
-    .box {
+    .circle {
       height: 1em;
       width: 1em;
       clear: both;
       margin-right: 0.5em;
+      border-radius:50%;
+      -moz-border-radius:50%;
+      -webkit-border-radius:50%;
     }
 
     .red {
@@ -100,13 +103,13 @@
         </tr>
         <tr>
           <td>
-            <div class='box red'></div>
+            <div class='circle red'></div>
           </td>
           <td>Dependencies</td>
         </tr>
         <tr>
           <td>
-            <div class='box blue'></div>
+            <div class='circle blue'></div>
           </td>
           <td>Dependenents</td>
         </tr>
