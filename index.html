@@ -1330,6 +1330,10 @@
     }
   }
 
+  function sortTypes(types) {
+    return types.sort();
+  }
+
   function stats(graph) {
     const fields = graph.nodes.filter(node => node.group === 1).length;
     const methods = graph.nodes.filter(node => node.group === 2).length;
@@ -1371,13 +1375,15 @@
 
     // add 'Implements' element
     if (classInfo.implements != null) {
+      const interfaces = sortTypes(classInfo.implements);
+
       tableRow = document.createElement('tr')
-      tableRow.innerHTML = '<th class="panel-title">Implements (' + classInfo.implements.length + ')</th>';
+      tableRow.innerHTML = '<th class="panel-title">Implements (' + interfaces.length + ')</th>';
       classInfoTable.appendChild(tableRow);
 
-      for(var i = 0; i < classInfo.implements.length; i++) {
+      for(var i = 0; i < interfaces.length; i++) {
         tableRow = document.createElement('tr');
-        tableRow.innerHTML = '<td>' + classInfo.implements[i] + '</td>';
+        tableRow.innerHTML = '<td>' + interfaces[i] + '</td>';
         classInfoTable.appendChild(tableRow);
       }
     }
