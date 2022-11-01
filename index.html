@@ -78,6 +78,10 @@
     .blue {
       background-color: blue;
     }
+
+    .separator {
+      padding-top: 1em;
+    }
   </style>
 </head>
 
@@ -95,11 +99,15 @@
           <th class="panel-title" colspan="2">Legend</th>
         </tr>
         <tr>
-          <td><div class='box red'></div></td>
+          <td>
+            <div class='box red'></div>
+          </td>
           <td>Dependencies</td>
         </tr>
         <tr>
-          <td><div class='box blue'></div></td>
+          <td>
+            <div class='box blue'></div>
+          </td>
           <td>Dependenents</td>
         </tr>
       </table>
@@ -1447,7 +1455,7 @@ ${countableTextDependents(d.dependents.length)}`
     // add 'Extends' element
     if (classInfo.extends != null) {
       tableRow = document.createElement('tr')
-      tableRow.innerHTML = '<th class="panel-title">Extends</th>';
+      tableRow.innerHTML = '<th class="panel-title separator">Extends</th>';
       classInfoTable.appendChild(tableRow);
     }
 
@@ -1460,7 +1468,7 @@ ${countableTextDependents(d.dependents.length)}`
       const interfaces = sortTypes(classInfo.implements);
 
       tableRow = document.createElement('tr')
-      tableRow.innerHTML = '<th class="panel-title">Implements (' + interfaces.length + ')</th>';
+      tableRow.innerHTML = '<th class="panel-title separator">Implements (' + interfaces.length + ')</th>';
       classInfoTable.appendChild(tableRow);
 
       for (let i = 0; i < interfaces.length; i++) {
@@ -1475,4 +1483,5 @@ ${countableTextDependents(d.dependents.length)}`
   stats(graph);
   setClassInfo(graph.meta.classInfo);
 </script>
+
 </html>
