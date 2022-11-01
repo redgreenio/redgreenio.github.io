@@ -1341,15 +1341,45 @@
   }
 
   function setClassInfo(classInfo) {
-    document.getElementById('class-name').textContent = classInfo.name;
-
-    if (classInfo.extends != null) {
-      document.getElementById('class-info').innerHTML += '<td class="property">Extends</td>' + '<td>' + classInfo.extends + '</td>';
+    // clear the table
+    const classInfoTable = document.getElementById('class-info');
+    var child = classInfoTable.lastChild;
+    while (child) {
+      classInfoTable.removeChild(child);
+      child = classInfoTable.lastElementChild;
     }
-    if (classInfo.implements != null) {
-      const interfaces = classInfo.implements.join("\n").trim();
 
-      document.getElementById('class-info').innerHTML += '<td class="property">Implements (' + classInfo.implements.length + ')</td>' + '<td style="white-space:pre-wrap; word-wrap:break-word">' + interfaces + '</td>';
+    // add table header 'Class'
+    var tableRow = document.createElement('tr')
+    tableRow.innerHTML = '<th class="panel-title">Class</th>';
+    classInfoTable.appendChild(tableRow);
+
+    tableRow = document.createElement('tr');
+    tableRow.innerHTML = '<td>' + classInfo.name + '</th>';
+    classInfoTable.appendChild(tableRow);
+
+    // add 'Extends' element
+    if (classInfo.extends != null) {
+      var tableRow = document.createElement('tr')
+      tableRow.innerHTML = '<th class="panel-title">Extends</th>';
+      classInfoTable.appendChild(tableRow);
+    }
+
+    tableRow = document.createElement('tr');
+    tableRow.innerHTML = '<td>' + classInfo.extends + '</th>';
+    classInfoTable.appendChild(tableRow);
+
+    // add 'Implements' element
+    if (classInfo.implements != null) {
+      tableRow = document.createElement('tr')
+      tableRow.innerHTML = '<th class="panel-title">Implements (' + classInfo.implements.length + ')</th>';
+      classInfoTable.appendChild(tableRow);
+
+      for(var i = 0; i < classInfo.implements.length; i++) {
+        tableRow = document.createElement('tr');
+        tableRow.innerHTML = '<td>' + classInfo.implements[i] + '</td>';
+        classInfoTable.appendChild(tableRow);
+      }
     }
   }
 
