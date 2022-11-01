@@ -1397,14 +1397,14 @@ ${countableTextDependents(d.dependents.length)}`
   function setClassInfo(classInfo) {
     // clear the table
     const classInfoTable = document.getElementById('class-info');
-    var child = classInfoTable.lastChild;
+    let child = classInfoTable.lastChild;
     while (child) {
       classInfoTable.removeChild(child);
       child = classInfoTable.lastElementChild;
     }
 
     // add table header 'Class'
-    var tableRow = document.createElement('tr')
+    let tableRow = document.createElement('tr')
     tableRow.innerHTML = '<th class="panel-title">Class</th>';
     classInfoTable.appendChild(tableRow);
 
@@ -1414,7 +1414,7 @@ ${countableTextDependents(d.dependents.length)}`
 
     // add 'Extends' element
     if (classInfo.extends != null) {
-      var tableRow = document.createElement('tr')
+      tableRow = document.createElement('tr')
       tableRow.innerHTML = '<th class="panel-title">Extends</th>';
       classInfoTable.appendChild(tableRow);
     }
@@ -1431,7 +1431,7 @@ ${countableTextDependents(d.dependents.length)}`
       tableRow.innerHTML = '<th class="panel-title">Implements (' + interfaces.length + ')</th>';
       classInfoTable.appendChild(tableRow);
 
-      for (var i = 0; i < interfaces.length; i++) {
+      for (let i = 0; i < interfaces.length; i++) {
         tableRow = document.createElement('tr');
         tableRow.innerHTML = typeNameHtml(interfaces[i]);
         classInfoTable.appendChild(tableRow);
