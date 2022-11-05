@@ -8,13 +8,14 @@ class LikeButton extends React.Component {
   }
 
   render() {
+    const title = 'Types'
     const items = [{ 'StoryPost': 19 }];
 
     return (
       <div>
         <table className='panel'>
           <thead>
-            <tr><th className='panel-title' colSpan='2'>Types</th></tr>
+            <tr><th className='panel-title' colSpan='2'>{title}</th></tr>
           </thead>
           <tbody>
             {items.map((item) => Row(item))}
