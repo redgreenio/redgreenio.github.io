@@ -13,12 +13,28 @@ class LikeButton extends React.Component {
       return 'You liked this.';
     }
 
+    const item = { token: 'StoryPost', frequency: 19 };
+
     return (
-      <button onClick={() => this.setState({ liked: true })}>
-        Like JSX
-      </button>
+      <div>
+        <table className='panel'>
+          <thead>
+            <tr><th className='panel-title' colSpan='2'>Types</th></tr>
+          </thead>
+          <tbody>
+            {Row(item)}
+          </tbody>
+        </table>
+        <button onClick={() => this.setState({ liked: true })}>
+          Like JSX
+        </button>
+      </div>
     );
   };
+}
+
+function Row(props) {
+  return <tr><td>{props.token}</td><td>{props.frequency}</td></tr>
 }
 
 const app = document.getElementById('app');
