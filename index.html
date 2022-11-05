@@ -85,6 +85,13 @@
     .separator {
       padding-top: 1em;
     }
+
+    #app {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      margin: 1em;
+    }
   </style>
 </head>
 
@@ -94,6 +101,8 @@
   <div class="container">
     <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
+
+  <div id="app"></div>
 
   <div id="panels">
     <div>
@@ -1638,4 +1647,7 @@ Effort* = ${effort(d.dependencies.length, d.dependents.length)}, I = ${isNaN(ins
   buildClassInfoPanel(graph.meta.classInfo);
   buildVocabularyPanels(graph);
 </script>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="app.js"></script>
 </html>
