@@ -2,36 +2,38 @@
 
 const e = React.createElement;
 
-class LikeButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    const title = 'Types'
-    const items = [{ 'StoryPost': 19 }];
-
-    return (
-      <div>
-        <table className='panel'>
-          <thead>
-            <tr><th className='panel-title' colSpan='2'>{title}</th></tr>
-          </thead>
-          <tbody>
-            {items.map((item) => Row(item))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
-}
-
-function Row(props) {
+function VocabularyRow(props) {
   const token = Object.keys(props)[0];
-  return <tr key='token'><td>{token}</td><td>{props[token]}</td></tr>
+  return (
+    <tr key={token}>
+      <td className='property'>{token}</td>
+      <td className='value-number'>{props[token]}</td>
+    </tr>
+  )
 }
+
+function VocabularyPanel(props) {
+  const { title, items } = props;
+
+  return (
+    <div>
+      <table className='panel'>
+        <thead>
+          <tr><th className='panel-title' colSpan='2'>{title}</th></tr>
+        </thead>
+        <tbody>
+          {items.map((item) => VocabularyRow(item))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+const props = {
+  title: 'Types',
+  items: [{ 'void': 39 }, { 'StoryPost': 11 }],
+};
 
 const app = document.getElementById('app');
-console.log(app);
 const root = ReactDOM.createRoot(app);
-root.render(e(LikeButton));
+root.render(e(VocabularyPanel, props));
