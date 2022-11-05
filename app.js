@@ -8,7 +8,7 @@ class LikeButton extends React.Component {
   }
 
   render() {
-    const item = { token: 'StoryPost', frequency: 19 };
+    const items = [{ 'StoryPost': 19 }];
 
     return (
       <div>
@@ -17,7 +17,7 @@ class LikeButton extends React.Component {
             <tr><th className='panel-title' colSpan='2'>Types</th></tr>
           </thead>
           <tbody>
-            {Row(item)}
+            {items.map((item) => Row(item))}
           </tbody>
         </table>
       </div>
@@ -26,7 +26,8 @@ class LikeButton extends React.Component {
 }
 
 function Row(props) {
-  return <tr><td>{props.token}</td><td>{props.frequency}</td></tr>
+  const token = Object.keys(props)[0];
+  return <tr key='token'><td>{token}</td><td>{props[token]}</td></tr>
 }
 
 const app = document.getElementById('app');
