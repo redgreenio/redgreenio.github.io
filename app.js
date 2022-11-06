@@ -47,9 +47,3 @@ function updateVocabularyPanels(props) {
   const root = ReactDOM.createRoot(app);
   root.render(e(TypesAndWords, props));
 }
-
-const props = {
-  types: [{ 'void': 39 }, { 'StoryPost': 11 }],
-  words: [{ 'on': 14 }, { 'get': 14 }],
-};
-updateVocabularyPanels(props);

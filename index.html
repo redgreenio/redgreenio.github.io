@@ -152,6 +152,10 @@
   </div>
 </body>
 <script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="./app.js" type="text/babel"></script>
 <script>
   const colorin = "#00f";
   const colorout = "#f00";
@@ -545,13 +549,20 @@ Effort* = ${effort(d.dependencies.length, d.dependents.length)}, I = ${isNaN(ins
     }
   }
 
-  drawEdgeBundlingGraph(graph);
-  stats(graph);
-  buildClassInfoPanel(graph.meta.classInfo);
-  buildVocabularyPanels(graph);
+  window.addEventListener('DOMContentLoaded', function (e) {
+    drawEdgeBundlingGraph(graph);
+    stats(graph);
+    buildClassInfoPanel(graph.meta.classInfo);
+    buildVocabularyPanels(graph);
+
+    const props = {
+      types: [{ 'void': 39 }, { 'StoryPost': 11 }],
+      words: [{ 'on': 15 }, { 'get': 14 }],
+    };
+
+    setTimeout(function() { updateVocabularyPanels(props); }, 1000);
+  });
 </script>
-<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script src="./app.js" type="text/babel"></script>
+<script>
+</script>
 </html>
