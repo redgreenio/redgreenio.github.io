@@ -40,7 +40,7 @@ function TypesAndWords(graph) {
   const wordsProps = { title: 'Words', items: words };
 
   return (
-    <div>
+    <div className='scroll'>
       {VocabularyPanel(typesProps)}
       {VocabularyPanel(wordsProps)}
     </div>
