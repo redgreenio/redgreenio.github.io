@@ -9,7 +9,7 @@ function VocabularyRow(props) {
       <td className='property'>{token}</td>
       <td className='value-number'>{props[token]}</td>
     </tr>
-  )
+  );
 }
 
 function VocabularyPanel(props) {
@@ -30,10 +30,16 @@ function VocabularyPanel(props) {
 }
 
 function TypesAndWords(props) {
-  const { types } = props;
+  const { types, words } = props;
+  const typesProps = { title: 'Types', items: types };
+  const wordsProps = { title: 'Wrods', items: words };
+
   return (
-    VocabularyPanel({ title: 'Types', items: types })
-  )
+    <div>
+      {VocabularyPanel(typesProps)}
+      {VocabularyPanel(wordsProps)}
+    </div>
+  );
 }
 
 function updateVocabularyPanels(props) {
@@ -44,5 +50,6 @@ function updateVocabularyPanels(props) {
 
 const props = {
   types: [{ 'void': 39 }, { 'StoryPost': 11 }],
+  words: [{ 'on': 14 }, { 'get': 14 }],
 };
 updateVocabularyPanels(props);
