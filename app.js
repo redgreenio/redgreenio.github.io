@@ -29,14 +29,20 @@ function VocabularyPanel(props) {
   );
 }
 
+function TypesAndWords(props) {
+  const { types } = props;
+  return (
+    VocabularyPanel({ title: 'Types', items: types })
+  )
+}
+
 function updateVocabularyPanels(props) {
   const app = document.getElementById('app');
   const root = ReactDOM.createRoot(app);
-  root.render(e(VocabularyPanel, props));
+  root.render(e(TypesAndWords, props));
 }
 
 const props = {
-  title: 'Types',
-  items: [{ 'void': 39 }, { 'StoryPost': 11 }],
+  types: [{ 'void': 39 }, { 'StoryPost': 11 }],
 };
 updateVocabularyPanels(props);
