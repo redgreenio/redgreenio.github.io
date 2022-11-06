@@ -14,6 +14,10 @@ function VocabularyRow(props) {
 
 function VocabularyPanel(props) {
   const { title, items } = props;
+  const rows = [];
+  for (const key in items) {
+    rows.push({ [key]: items[key] })
+  }
 
   return (
     <div>
@@ -22,7 +26,7 @@ function VocabularyPanel(props) {
           <tr><th className='panel-title' colSpan='2'>{title}</th></tr>
         </thead>
         <tbody>
-          {items.map((item) => VocabularyRow(item))}
+          {rows.map((row) => VocabularyRow(row))}
         </tbody>
       </table>
     </div>
@@ -32,7 +36,7 @@ function VocabularyPanel(props) {
 function TypesAndWords(props) {
   const { types, words } = props;
   const typesProps = { title: 'Types', items: types };
-  const wordsProps = { title: 'Wrods', items: words };
+  const wordsProps = { title: 'Words', items: words };
 
   return (
     <div>

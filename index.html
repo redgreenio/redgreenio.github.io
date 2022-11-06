@@ -89,7 +89,7 @@
 
     #app {
       position: absolute;
-      bottom: 0;
+      top: 0;
       right: 0;
       margin: 1em;
     }
@@ -146,8 +146,6 @@
           <th class="panel-title">Class</th>
         </tr>
       </table>
-      <table id="types" class="panel"></table>
-      <table id="words" class="panel last-panel"></table>
     </div>
   </div>
 </body>
@@ -505,59 +503,15 @@ Effort* = ${effort(d.dependencies.length, d.dependents.length)}, I = ${isNaN(ins
     }
   }
 
-  function buildVocabularyPanels(graph) {
-    const { types, words } = vocabularyStats(vocabulary(graph));
-
-    // clear the 'Types' table
-    const typesTable = document.getElementById('types');
-    let child = typesTable.lastChild;
-    while (child) {
-      typesTable.removeChild(child);
-      child = typesTable.lastElementChild;
-    }
-
-    // add table header 'Types'
-    let tableRow = document.createElement('tr')
-    tableRow.innerHTML = '<th class="panel-title" colspan="2">Types</th>';
-    typesTable.appendChild(tableRow);
-
-    // populate types
-    for (type in types) {
-      tableRow = document.createElement('tr');
-      tableRow.innerHTML = `<td class="property">${type}</td><td class="value-number">${types[type]}</td>`;
-      typesTable.appendChild(tableRow);
-    }
-
-    // clear the 'Words' table
-    const wordsTable = document.getElementById('words');
-    child = wordsTable.lastChild;
-    while (child) {
-      wordsTable.removeChild(child);
-      child = wordsTable.lastElementChild;
-    }
-
-    // add table header 'Words'
-    tableRow = document.createElement('tr')
-    tableRow.innerHTML = '<th class="panel-title" colspan="2">Words</th>';
-    wordsTable.appendChild(tableRow);
-
-    // populate words
-    for (word in words) {
-      tableRow = document.createElement('tr');
-      tableRow.innerHTML = `<td class="property">${word}</td><td class="value-number">${words[word]}</td>`;
-      wordsTable.appendChild(tableRow);
-    }
-  }
-
   window.addEventListener('DOMContentLoaded', function (e) {
     drawEdgeBundlingGraph(graph);
     stats(graph);
     buildClassInfoPanel(graph.meta.classInfo);
-    buildVocabularyPanels(graph);
 
+    const { types, words } = vocabularyStats(vocabulary(graph));
     const props = {
-      types: [{ 'void': 39 }, { 'StoryPost': 11 }],
-      words: [{ 'on': 15 }, { 'get': 14 }],
+      types: types,
+      words: words,
     };
 
     setTimeout(function() { updateVocabularyPanels(props); }, 1000);
