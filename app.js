@@ -33,18 +33,72 @@ function VocabularyPanel(props) {
   );
 }
 
-function TypesAndWords(graph) {
-  const { types, words } = vocabularyStats(vocabulary(graph, selectors.all));
-
-  const typesProps = { title: 'Types', items: types };
-  const wordsProps = { title: 'Words', items: words };
+function Selector(props, onOptionChanged) {
+  const title = props.option.title;
 
   return (
-    <div className='scroll'>
-      {VocabularyPanel(typesProps)}
-      {VocabularyPanel(wordsProps)}
+    <div key={title.toLowerCase()}>
+      <input
+        type='radio'
+        name='selector'
+        onChange={_ => onOptionChanged(props.option)}
+        checked={props.option == props.selected} />
+      <label>{title}</label>
     </div>
   );
+}
+
+function Selectors(props, onOptionChanged) {
+  function createProps(option) {
+    return {
+      option: option,
+      selected: props.selected,
+    }
+  }
+
+  return (
+    <div>
+      {props.options.map((option) => Selector(createProps(option), onOptionChanged))}
+    </div>
+  );
+}
+
+const selectors = {
+  all: _ => true,
+  state: node => node.group === 1,
+  behavior: node => node.group === 2,
+};
+
+const selectorRadioButtonOptions = [
+  { title: 'All', selector: selectors.all, },
+  { title: 'State', selector: selectors.state, },
+  { title: 'Behavior', selector: selectors.behavior, },
+];
+
+class TypesAndWords extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { selected: selectorRadioButtonOptions[0], };
+  }
+
+  render() {
+    const selectorsProps = {
+      options: selectorRadioButtonOptions,
+      selected: this.state.selected,
+    };
+
+    const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
+    const typesProps = { title: 'Types', items: types };
+    const wordsProps = { title: 'Words', items: words };
+
+    return (
+      <div className='scroll'>
+        {Selectors(selectorsProps, (option) => this.setState({ selected: option }))}
+        {VocabularyPanel(typesProps)}
+        {VocabularyPanel(wordsProps)}
+      </div>
+    );
+  }
 }
 
 function tokenize(signature) {
@@ -105,12 +159,6 @@ function tokenize(signature) {
     return tokenizeField(signature);
   }
 }
-
-const selectors = {
-  all: _ => true,
-  state: node => node.group === 1,
-  behavior: node => node.group === 2,
-};
 
 function vocabulary(graph, selector = selectors.all) {
   return graph.nodes.filter(selector)
