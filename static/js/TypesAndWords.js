@@ -87,7 +87,7 @@ class TypesAndWords extends React.Component {
       selected: this.state.selected,
     };
 
-    const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
+    const { types, words } = vocabularyStats(vocabulary(this.props, this.state.selected.selector));
     const typesProps = { title: 'Types', items: types };
     const wordsProps = { title: 'Words', items: words };
 
