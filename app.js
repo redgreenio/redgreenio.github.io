@@ -34,7 +34,7 @@ function VocabularyPanel(props) {
 }
 
 function TypesAndWords(graph) {
-  const { types, words } = vocabularyStats(vocabulary(graph));
+  const { types, words } = vocabularyStats(vocabulary(graph, selectors.all));
 
   const typesProps = { title: 'Types', items: types };
   const wordsProps = { title: 'Words', items: words };
@@ -79,7 +79,8 @@ function tokenize(signature) {
 
   function splitIdentifier(identifier) {
     if (identifier.indexOf('_') !== -1) {
-      return identifier.split('_');
+      return identifier.split('_')
+        .filter(word => word.length > 0);
     }
     return identifier.split(/(?=[A-Z])/);
   }
@@ -105,12 +106,20 @@ function tokenize(signature) {
   }
 }
 
-function vocabulary(graph) {
-  return graph.nodes.map(node => tokenize(node.id))
+const selectors = {
+  all: _ => true,
+  state: node => node.group === 1,
+  behavior: node => node.group === 2,
+};
+
+function vocabulary(graph, selector = selectors.all) {
+  return graph.nodes.filter(selector)
+    .map(node => tokenize(node.id))
     .reduceRight((acc, tokens) => {
       return {
         types: acc.types.concat(tokens.types),
-        words: acc.words.concat(tokens.words).filter(word => word !== '<init>' && word !== '<clinit>'),
+        words: acc.words.concat(tokens.words)
+          .filter(word => word !== '<init>' && word !== '<clinit>'),
       };
     });
 }
