@@ -418,7 +418,10 @@ Effort* = ${effort(d.dependencies.length, d.dependents.length)}, I = ${isNaN(ins
     drawEdgeBundlingGraph(graph);
     stats(graph);
     buildClassInfoPanel(graph.meta.classInfo);
-    setTimeout(function () { updateVocabularyPanels(graph); }, 1000);
+    setTimeout(function () {
+      const props = { graph: graph, onTokenHover: (token) => console.log(token) }
+      updateVocabularyPanels(props);
+    }, 1000);
   });
 </script>
 <script>
