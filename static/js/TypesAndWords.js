@@ -12,25 +12,32 @@ function VocabularyRow(props, rowCount, onTokenHover) {
   );
 }
 
-function VocabularyPanel(props) {
-  const { title, items, onTokenHover } = props;
-  const rows = [];
-  for (const key in items) {
-    rows.push({ [key]: items[key] })
+class VocabularyPanel extends React.Component {
+  constructor(props) {
+    super(props);
   }
 
-  return (
-    <div>
-      <table className='panel'>
-        <thead>
-          <tr><th className='panel-title' colSpan='2'>{title + ' (' + Object.keys(items).length + ')'}</th></tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => VocabularyRow(row, index + 1, onTokenHover))}
-        </tbody>
-      </table>
-    </div>
-  );
+  render() {
+    const { title, items, onTokenHover } = this.props;
+
+    const rows = [];
+    for (const key in items) {
+      rows.push({ [key]: items[key] })
+    }
+
+    return (
+      <div>
+        <table className='panel'>
+          <thead>
+            <tr><th className='panel-title' colSpan='2'>{title + ' (' + Object.keys(items).length + ')'}</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => VocabularyRow(row, index + 1, onTokenHover))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 }
 
 function Selector(props, onOptionChanged) {
@@ -95,8 +102,8 @@ class TypesAndWords extends React.Component {
     return (
       <div className='scroll'>
         {Selectors(selectorsProps, (option) => this.setState({ selected: option }))}
-        {VocabularyPanel(typesProps)}
-        {VocabularyPanel(wordsProps)}
+        <VocabularyPanel title='Types' items={types} onTokenHover={onTokenHover}></VocabularyPanel>
+        <VocabularyPanel title='Words' items={words} onTokenHover={onTokenHover}></VocabularyPanel>
       </div>
     );
   }
