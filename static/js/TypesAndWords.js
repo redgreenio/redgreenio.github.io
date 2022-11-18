@@ -2,14 +2,22 @@
 
 const e = React.createElement;
 
-function VocabularyRow(props, position, onTokenHover) {
-  const token = Object.keys(props)[0];
-  return (
-    <tr key={token} onMouseOver={() => onTokenHover(token)} onMouseOut={() => onTokenHover(null)}>
-      <td className='property'>{position}. {token}</td>
-      <td className='value-number'>{props[token]}</td>
-    </tr>
-  );
+class VocabularyRow extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    const { row, position, onTokenHover } = this.props;
+    const token = Object.keys(row)[0];
+
+    return (
+      <tr key={token} onMouseOver={() => onTokenHover(token)} onMouseOut={() => onTokenHover(null)}>
+        <td className='property'>{position}. {token}</td>
+        <td className='value-number'>{row[token]}</td>
+      </tr>
+    );
+  }
 }
 
 class VocabularyPanel extends React.Component {
@@ -32,7 +40,7 @@ class VocabularyPanel extends React.Component {
             <tr><th className='panel-title' colSpan='2'>{title + ' (' + Object.keys(items).length + ')'}</th></tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => VocabularyRow(row, index + 1, onTokenHover))}
+            {rows.map((row, index) => <VocabularyRow row={row} position={index + 1} onTokenHover={onTokenHover}></VocabularyRow>)}
           </tbody>
         </table>
       </div>
