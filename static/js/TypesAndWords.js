@@ -104,8 +104,6 @@ class TypesAndWords extends React.Component {
 
     const { graph, onTokenHover } = this.props;
     const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
-    const typesProps = { title: 'Types', items: types, onTokenHover: onTokenHover };
-    const wordsProps = { title: 'Words', items: words, onTokenHover: onTokenHover };
 
     return (
       <div className='scroll'>
