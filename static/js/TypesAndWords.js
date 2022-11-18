@@ -2,6 +2,10 @@
 
 const e = React.createElement;
 
+function tokenFrom(row) {
+  return Object.keys(row)[0];
+}
+
 class VocabularyRow extends React.Component {
   constructor(props) {
     super(props);
@@ -23,12 +27,11 @@ class VocabularyRow extends React.Component {
 
   render() {
     const { row, position } = this.props;
-    const token = Object.keys(row)[0];
+    const token = tokenFrom(row);
     const className = 'vocabulary-' + this.state.rowState;
 
     return (
-      <tr key={token}
-          onMouseOver={() => this.mouseOver(token)}
+      <tr onMouseOver={() => this.mouseOver(token)}
           onMouseOut={() => this.mouseOut()}
           className={className}>
         <td className='property'>{position}. {token}</td>
@@ -58,7 +61,7 @@ class VocabularyPanel extends React.Component {
             <tr><th className='panel-title' colSpan='2'>{title + ' (' + Object.keys(items).length + ')'}</th></tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => <VocabularyRow row={row} position={index + 1} onTokenHover={onTokenHover}></VocabularyRow>)}
+            {rows.map((row, index) => <VocabularyRow key={tokenFrom(row)} row={row} position={index + 1} onTokenHover={onTokenHover}></VocabularyRow>)}
           </tbody>
         </table>
       </div>
