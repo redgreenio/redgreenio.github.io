@@ -112,6 +112,11 @@
     .vocabulary-hover {
       font-weight: bold;
     }
+
+    .vocabulary-selected {
+      font-weight: bold;
+      font-style: italic;
+    }
 </style>
 </head>
 
@@ -437,8 +442,16 @@ Effort* = ${effort(d.dependencies.length, d.dependents.length)}, I = ${isNaN(ins
     stats(graph);
     buildClassInfoPanel(graph.meta.classInfo);
 
+    function updateGraph(graph, tokens) {
+      let tokenToHighlight = tokens.selected;
+      if (tokens.hovered !== null) {
+        tokenToHighlight = tokens.hovered;
+      }
+      drawEdgeBundlingGraph(graph, tokenToHighlight);
+    }
+
     setTimeout(function () {
-      const props = { graph: graph, onTokenHover: (token) => drawEdgeBundlingGraph(graph, token) }
+      const props = { graph: graph, onTokensChanged: (tokens) => updateGraph(graph, tokens) }
       updateVocabularyPanels(props);
     }, 1000);
   });

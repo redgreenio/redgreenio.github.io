@@ -9,31 +9,23 @@ function tokenFrom(row) {
 class VocabularyRow extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { rowState: 'normal' };
-
-    this.mouseOver = this.mouseOver.bind(this);
-    this.mouseOut = this.mouseOut.bind(this);
-  }
-
-  mouseOver(token) {
-    this.props.onTokenHover(token);
-    this.setState({ rowState: 'hover' });
-  }
-
-  mouseOut() {
-    this.props.onTokenHover(null);
-    this.setState({ rowState: 'normal' });
   }
 
   render() {
-    const { row, position } = this.props;
+    const { row, position, tokens, onTokenEvent } = this.props;
     const token = tokenFrom(row);
-    const className = 'vocabulary-' + this.state.rowState;
+    let className = 'vocabulary-normal';
+    if (tokens.hovered === token) {
+      className = 'vocabulary-hover';
+    } else if (tokens.selected === token) {
+      className = 'vocabulary-selected';
+    }
 
     return (
-      <tr onMouseOver={() => this.mouseOver(token)}
-          onMouseOut={() => this.mouseOut()}
-          className={className}>
+      <tr onMouseOver={() => onTokenEvent('mouse-over', token)}
+        onMouseOut={() => onTokenEvent('mouse-out', token)}
+        onClick={() => onTokenEvent('click', token)}
+        className={className}>
         <td className='property'>{position}. {token}</td>
         <td className='value-number'>{row[token]}</td>
       </tr>
@@ -47,7 +39,7 @@ class VocabularyPanel extends React.Component {
   }
 
   render() {
-    const { title, items, onTokenHover } = this.props;
+    const { title, items, tokens, onTokenEvent } = this.props;
 
     const rows = [];
     for (const key in items) {
@@ -61,7 +53,7 @@ class VocabularyPanel extends React.Component {
             <tr><th className='panel-title' colSpan='2'>{title + ' (' + Object.keys(items).length + ')'}</th></tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => <VocabularyRow key={tokenFrom(row)} row={row} position={index + 1} onTokenHover={onTokenHover}></VocabularyRow>)}
+            {rows.map((row, index) => <VocabularyRow key={tokenFrom(row)} row={row} position={index + 1} tokens={tokens} onTokenEvent={onTokenEvent}></VocabularyRow>)}
           </tbody>
         </table>
       </div>
@@ -114,7 +106,37 @@ const selectorRadioButtonOptions = [
 class TypesAndWords extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selector: selectorRadioButtonOptions[0], };
+    const tokens = { selected: null, hovered: null };
+    this.state = { selector: selectorRadioButtonOptions[0], tokens: tokens };
+
+    this.onTokenEvent = this.onTokenEvent.bind(this);
+    this.updateTokens = this.updateTokens.bind(this);
+  }
+
+  updateTokens(event, token) {
+    let selected = null;
+    let hovered = token;
+    if (event === 'click' && this.state.tokens.selected === token) {
+      selected = null;
+    } else if (event === 'click') {
+      selected = token;
+    }
+    if ((event === 'mouse-out' || event === 'mouse-over') && this.state.tokens.selected !== null) {
+      selected = this.state.tokens.selected;
+    }
+    if (event === 'mouse-out') {
+      hovered = null;
+    }
+    const tokens = { hovered: hovered, selected: selected };
+    this.setState((state) => ({ selector: state.selector, tokens: tokens }));
+
+    console.log(tokens);
+    this.props.onTokensChanged(tokens);
+  }
+
+  onTokenEvent(event, token) {
+    console.log(event + ': ' + token);
+    this.updateTokens(event, token);
   }
 
   render() {
@@ -123,14 +145,14 @@ class TypesAndWords extends React.Component {
       selector: this.state.selector,
     };
 
-    const { graph, onTokenHover } = this.props;
+    const { graph } = this.props;
     const { types, words } = vocabularyStats(vocabulary(graph, this.state.selector.selector));
 
     return (
       <div className='scroll'>
         {Selectors(selectorsProps, (option) => this.setState({ selector: option }))}
-        <VocabularyPanel title='Types' items={types} onTokenHover={onTokenHover}></VocabularyPanel>
-        <VocabularyPanel title='Words' items={words} onTokenHover={onTokenHover}></VocabularyPanel>
+        <VocabularyPanel title='Types' items={types} tokens={this.state.tokens} onTokenEvent={this.onTokenEvent}></VocabularyPanel>
+        <VocabularyPanel title='Words' items={words} tokens={this.state.tokens} onTokenEvent={this.onTokenEvent}></VocabularyPanel>
       </div>
     );
   }
