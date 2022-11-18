@@ -75,7 +75,7 @@ function Selector(props, onOptionChanged) {
         type='radio'
         name='selector'
         onChange={_ => onOptionChanged(props.option)}
-        checked={props.option == props.selected} />
+        checked={props.option == props.selector} />
       <label>{title}</label>
     </div>
   );
@@ -85,7 +85,7 @@ function Selectors(props, onOptionChanged) {
   function createProps(option) {
     return {
       option: option,
-      selected: props.selected,
+      selector: props.selector,
     }
   }
 
@@ -111,21 +111,21 @@ const selectorRadioButtonOptions = [
 class TypesAndWords extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selected: selectorRadioButtonOptions[0], };
+    this.state = { selector: selectorRadioButtonOptions[0], };
   }
 
   render() {
     const selectorsProps = {
       options: selectorRadioButtonOptions,
-      selected: this.state.selected,
+      selector: this.state.selector,
     };
 
     const { graph, onTokenHover } = this.props;
-    const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
+    const { types, words } = vocabularyStats(vocabulary(graph, this.state.selector.selector));
 
     return (
       <div className='scroll'>
-        {Selectors(selectorsProps, (option) => this.setState({ selected: option }))}
+        {Selectors(selectorsProps, (option) => this.setState({ selector: option }))}
         <VocabularyPanel title='Types' items={types} onTokenHover={onTokenHover}></VocabularyPanel>
         <VocabularyPanel title='Words' items={words} onTokenHover={onTokenHover}></VocabularyPanel>
       </div>
