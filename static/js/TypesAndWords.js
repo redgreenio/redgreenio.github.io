@@ -5,14 +5,32 @@ const e = React.createElement;
 class VocabularyRow extends React.Component {
   constructor(props) {
     super(props);
+    this.state = { rowState: 'normal' };
+
+    this.mouseOver = this.mouseOver.bind(this);
+    this.mouseOut = this.mouseOut.bind(this);
+  }
+
+  mouseOver(token) {
+    this.props.onTokenHover(token);
+    this.setState({ rowState: 'hover' });
+  }
+
+  mouseOut() {
+    this.props.onTokenHover(null);
+    this.setState({ rowState: 'normal' });
   }
 
   render() {
-    const { row, position, onTokenHover } = this.props;
+    const { row, position } = this.props;
     const token = Object.keys(row)[0];
+    const className = 'vocabulary-' + this.state.rowState;
 
     return (
-      <tr key={token} onMouseOver={() => onTokenHover(token)} onMouseOut={() => onTokenHover(null)}>
+      <tr key={token}
+          onMouseOver={() => this.mouseOver(token)}
+          onMouseOut={() => this.mouseOut()}
+          className={className}>
         <td className='property'>{position}. {token}</td>
         <td className='value-number'>{row[token]}</td>
       </tr>
