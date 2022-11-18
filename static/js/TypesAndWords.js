@@ -12,8 +12,8 @@ function VocabularyRow(props, rowCount, onTokenHover) {
   );
 }
 
-function VocabularyPanel(props, onTokenHover) {
-  const { title, items } = props;
+function VocabularyPanel(props) {
+  const { title, items, onTokenHover } = props;
   const rows = [];
   for (const key in items) {
     rows.push({ [key]: items[key] })
@@ -89,14 +89,14 @@ class TypesAndWords extends React.Component {
 
     const { graph, onTokenHover } = this.props;
     const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
-    const typesProps = { title: 'Types', items: types };
-    const wordsProps = { title: 'Words', items: words };
+    const typesProps = { title: 'Types', items: types, onTokenHover: onTokenHover };
+    const wordsProps = { title: 'Words', items: words, onTokenHover: onTokenHover };
 
     return (
       <div className='scroll'>
         {Selectors(selectorsProps, (option) => this.setState({ selected: option }))}
-        {VocabularyPanel(typesProps, onTokenHover)}
-        {VocabularyPanel(wordsProps, onTokenHover)}
+        {VocabularyPanel(typesProps)}
+        {VocabularyPanel(wordsProps)}
       </div>
     );
   }
