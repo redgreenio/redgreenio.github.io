@@ -87,15 +87,16 @@ class TypesAndWords extends React.Component {
       selected: this.state.selected,
     };
 
-    const { types, words } = vocabularyStats(vocabulary(this.props.graph, this.state.selected.selector));
+    const { graph, onTokenHover } = this.props;
+    const { types, words } = vocabularyStats(vocabulary(graph, this.state.selected.selector));
     const typesProps = { title: 'Types', items: types };
     const wordsProps = { title: 'Words', items: words };
 
     return (
       <div className='scroll'>
         {Selectors(selectorsProps, (option) => this.setState({ selected: option }))}
-        {VocabularyPanel(typesProps, this.props.onTokenHover)}
-        {VocabularyPanel(wordsProps, this.props.onTokenHover)}
+        {VocabularyPanel(typesProps, onTokenHover)}
+        {VocabularyPanel(wordsProps, onTokenHover)}
       </div>
     );
   }
