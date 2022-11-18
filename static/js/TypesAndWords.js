@@ -2,11 +2,11 @@
 
 const e = React.createElement;
 
-function VocabularyRow(props, rowCount, onTokenHover) {
+function VocabularyRow(props, position, onTokenHover) {
   const token = Object.keys(props)[0];
   return (
     <tr key={token} onMouseOver={() => onTokenHover(token)} onMouseOut={() => onTokenHover(null)}>
-      <td className='property'>{rowCount}. {token}</td>
+      <td className='property'>{position}. {token}</td>
       <td className='value-number'>{props[token]}</td>
     </tr>
   );
